@@ -13,10 +13,13 @@ gulp.task('transpile', () => {
 })
 
 gulp.task('browserify', () => {
- 
+
  return browserify('./src/app.js')
        .transform('babelify', {presets: ['es2015', 'react']})
        .bundle()
        .pipe(source('app.js'))
        .pipe(gulp.dest('./public'))
 })
+
+
+gulp.task('default', ['transpile', 'browserify']);
