@@ -10,7 +10,7 @@ gulp.task('transpile', () => {
            presets: ['es2015', 'react']
          }))
          .pipe(gulp.dest('./public'))
-})
+});
 
 gulp.task('browserify', () => {
  
@@ -19,4 +19,7 @@ gulp.task('browserify', () => {
        .bundle()
        .pipe(source('app.js'))
        .pipe(gulp.dest('./public'))
-})
+});
+gulp.task('watch', () => {
+  gulp.watch('./components/*.js', ['transpile', 'browserify']);
+});
