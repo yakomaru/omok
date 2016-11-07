@@ -13,7 +13,7 @@ gulp.task('transpile', () => {
 });
 
 gulp.task('browserify', () => {
- 
+
  return browserify('./src/app.js')
        .transform('babelify', {presets: ['es2015', 'react']})
        .bundle()
@@ -23,3 +23,6 @@ gulp.task('browserify', () => {
 gulp.task('watch', () => {
   gulp.watch('./components/*.js', ['transpile', 'browserify']);
 });
+
+
+gulp.task('default', ['transpile', 'browserify']);

@@ -9,12 +9,13 @@ class Grid extends React.Component {
     };
   }
   handleClick(){
-    this.setState({
-      played: this.props.playerTurn
-    }, () => {
-      this.props.changeCoordinateState(this.props.coordinate, this.state.played);
+    if(this.state.played === 0) {
+      this.setState({
+        played: this.props.playerTurn
+      }, () => {
+        this.props.changeCoordinateState(this.props.coordinate, this.state.played);
+      });
     }
-    )
   }
   render() {
     return(
