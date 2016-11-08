@@ -33,18 +33,15 @@ class Board extends React.Component {
     let rows;
     let test = 0;
     rows = this.state.board.map((value, key) => {
-     return value.map((innerValue, innerKey) => {
+      return value.map((innerValue, innerKey) => {
         let coordinate = key + ',' + innerKey;
         return (
-          <div className={'row' + key}>
             <Grid 
              key={coordinate} 
              coordinate={coordinate}
              playerTurn={this.state.playerTurn}
              changeCoordinateState={this.changeCoordinateState.bind(this)} 
-            />
-          </div>
-        
+            /> 
         )
       });
     });
