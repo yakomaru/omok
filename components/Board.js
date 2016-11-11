@@ -12,22 +12,28 @@ let buildRows = () => {
 class Board extends React.Component {
   constructor() {
     super();
-    const BOARD = buildRows(); 
+    const BOARD = buildRows();
     this.state = {
       board: BOARD,
-      playerTurn: 1
+      playerPiece: 1,
+      playerTurnCount: 0
     };
   }
-  changeCoordinateState(coordinate, played){
+  changeCoordinateState(coordinate, played, turnCount) {
     let newCoord= coordinate.split(',');
     let newBoard = this.state.board;
     let newTurn;
-    this.state.playerTurn > 0 ? newTurn = -1 : newTurn = 1;
+    this.state.playerPiece > 0 ? newTurn = -1 : newTurn = 1;
     newBoard[newCoord[0]][newCoord[1]] = played;
     this.setState({
       board: newBoard,
-      playerTurn: newTurn
+      playerPiece: newTurn,
+      playerTurnCount: turnCount
+    }, () => {
+      this.checkVictoryCondition();
     });
+  }
+  checkVictoryCondition() {
   }
   render() {
     let rows;
@@ -36,19 +42,20 @@ class Board extends React.Component {
       return value.map((innerValue, innerKey) => {
         let coordinate = key + ',' + innerKey;
         return (
-            <Grid 
-             key={coordinate} 
+            <Grid
+             key={coordinate}
              coordinate={coordinate}
-             playerTurn={this.state.playerTurn}
-             changeCoordinateState={this.changeCoordinateState.bind(this)} 
-            /> 
+             playerPiece={this.state.playerPiece}
+             playerTurnCount={this.state.playerTurnCount}
+             changeCoordinateState={this.changeCoordinateState.bind(this)}
+            />
         )
       });
     });
     return(
       <div>{rows}</div>
     )
-  }  
+  }
 }
 
 module.exports = Board;
