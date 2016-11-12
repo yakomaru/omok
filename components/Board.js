@@ -39,21 +39,20 @@ class Board extends React.Component {
     let horizontal = this.state.board[x];
     let vertical = this.state.board[y];
     let winCondition = 0;
-    let triggered = false;
-    for (let i = 0; i < this.state.board[x].length; i++) {
-      if (this.state.board[x][i] === played && !triggered){
-        triggered = true;
-        winCondition = 1;
-      }
-      else if (this.state.board[x][i] == played && triggered) {
+    for (let i = y; i < this.state.board[x].length; i++) {
+      if (this.state.board[x][i] === played) {
         winCondition++;
-        if (winCondition === 5){
-          break;
-        }
       }
       else {
-        winCondition = 0;
-        triggered = false;
+        break;
+      }
+    }
+    for (let j = y-1; j >= 0; j--) {
+      if(this.state.board[x][j] === played) {
+        winCondition++;
+      }
+      else {
+        break;
       }
     }
     console.log(winCondition)
