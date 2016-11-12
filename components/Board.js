@@ -30,10 +30,33 @@ class Board extends React.Component {
       playerPiece: newTurn,
       playerTurnCount: turnCount
     }, () => {
-      this.checkVictoryCondition();
+      if (turnCount >= 9) {
+        this.checkVictoryCondition(newCoord[0], newCoord[1], played);
+      }
     });
   }
-  checkVictoryCondition() {
+  checkVictoryCondition(x, y, played) {
+    let horizontal = this.state.board[x];
+    let vertical = this.state.board[y];
+    let winCondition = 0;
+    let triggered = false;
+    for (let i = 0; i < this.state.board[x].length; i++) {
+      if (this.state.board[x][i] === played && !triggered){
+        triggered = true;
+        winCondition = 1;
+      }
+      else if (this.state.board[x][i] == played && triggered) {
+        winCondition++;
+        if (winCondition === 5){
+          break;
+        }
+      }
+      else {
+        winCondition = 0;
+        triggered = false;
+      }
+    }
+    console.log(winCondition)
   }
   render() {
     let rows;
@@ -47,7 +70,7 @@ class Board extends React.Component {
              coordinate={coordinate}
              playerPiece={this.state.playerPiece}
              playerTurnCount={this.state.playerTurnCount}
-             changeCoordinateState={this.changeCoordinateState.bind(this)}
+          changeCoordinateState={this.changeCoordinateState.bind(this)}
             />
         )
       });
