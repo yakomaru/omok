@@ -21,8 +21,10 @@ class Grid extends React.Component {
   }
   render() {
     return(
-      <div className="grid" onClick={() => this.handleClick()}>
-        {this.state.played}
+      <div className="grid-space">
+        <div className="grid" onClick={() => this.handleClick()}>
+          {this.state.played}
+        </div>
       </div>
     )
   }
