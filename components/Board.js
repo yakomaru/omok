@@ -1,13 +1,10 @@
-import React from'react';
+import React from 'react';
 import _ from 'lodash';
-const Grid = require('./Grid.js');
+import Grid from './Grid';
+
 const BOARD_SIZE = 19;
-let buildColumn = () => {
-  return _.fill(Array(BOARD_SIZE), 0);
-};
-let buildRows = () => {
-  return _.map(Array(BOARD_SIZE), buildColumn);
-};
+const buildColumn = () => _.fill(Array(BOARD_SIZE), 0);
+const buildRows = () => _.map(Array(BOARD_SIZE), buildColumn);
 
 class Board extends React.Component {
   constructor() {
@@ -16,19 +13,17 @@ class Board extends React.Component {
     this.state = {
       board: BOARD,
       playerPiece: 1,
-      playerTurnCount: 0
+      playerTurnCount: 0,
     };
   }
-  changeCoordinateState(coordinate, played, turnCount) {
-    let newCoord= coordinate.split(',');
-    let newBoard = this.state.board;
-    let newTurn;
-    this.state.playerPiece > 0 ? newTurn = -1 : newTurn = 1;
+  changeCoordinateState(newCoord, played, turnCount) {
+    const newBoard = this.state.board;
+    const newTurn = this.state.playerPiece > 0 ? -1 : 1;
     newBoard[newCoord[0]][newCoord[1]] = played;
     this.setState({
       board: newBoard,
       playerPiece: newTurn,
-      playerTurnCount: turnCount
+      playerTurnCount: turnCount,
     }, () => {
       if (turnCount >= 9) {
         this.checkVictoryCondition(newCoord[0], newCoord[1], played);
@@ -36,76 +31,61 @@ class Board extends React.Component {
     });
   }
   checkVictoryCondition(x, y, played) {
-    this.checkHorizontalRows(x, y, played);
-    this.checkVerticalRows(x, y, played);
-    this.checkMajorDiagonalRows(parseInt(x), parseInt(y), played);
-    console.log(this.checkMinorDiagonalRows(parseInt(x), parseInt(y), played));
+    console.log(this.checkHorizontalRows(x, y, played) ||
+    this.checkVerticalRows(x, y, played) ||
+    this.checkMajorDiagonalRows(x, y, played) ||
+    this.checkMinorDiagonalRows(x, y, played));
   }
   checkMajorDiagonalRows(x, y, played) {
     let inARow = 0;
-    for (let i = 0; i <= 5; i++) {
-      if (this.state.board[x+i][y+i] === played) {
-        inARow++;
-      }
-      else {
+    for (let i = 0; i < 5; i += 1) {
+      if (this.state.board[x + i] && this.state.board[x + i][y + i] === played) {
+        inARow += 1;
+      } else {
         break;
       }
     }
-    for (let j = 1; j <= 5; j++) {
-      if (x-j < 0 || y-j < 0) {
-        break;
-      }     
-      if (this.state.board[x-j][y-j] === played) {
-        inARow++;
-      }
-      else {
+    for (let j = 1; j < 5; j += 1) {
+      if (this.state.board[x - j] && this.state.board[x - j][y - j] === played) {
+        inARow += 1;
+      } else {
         break;
       }
     }
     return inARow >= 5;
   }
-  checkMinorDiagonalRows(x, y, played){
+  checkMinorDiagonalRows(x, y, played) {
     let inARow = 0;
-    for (let i = 0; i <= 5; i++) {
-      if (y-i < 0){
-        break;
-      }
-      if (this.state.board[x+i][y-i] === played) {
-        inARow++;
-      }
-      else {
+    for (let i = 0; i < 5; i += 1) {
+      if (this.state.board[x + i] && this.state.board[x + i][y - i] === played) {
+        inARow += 1;
+      } else {
         break;
       }
     }
-    for (let j = 1; j <= 5; j++) {
-      if (x-j < 0) {
-        break;
-      }     
-      if (this.state.board[x-j][y+j] === played) {
-        inARow++;
-      }
-      else {
+    for (let j = 1; j < 5; j += 1) {
+      if (this.state.board[x - j] && this.state.board[x - j][y + j] === played) {
+        inARow += 1;
+      } else {
         break;
       }
     }
     return inARow >= 5;
   }
-  checkHorizontalRows(x, y, played) { 
-    let horizontal = this.state.board[x];
+  checkHorizontalRows(x, y, played) {
+    const horizontal = this.state.board[x];
     let inARow = 0;
-    for (let i = y; i < horizontal.length; i++) {
+    for (let i = y; i < horizontal.length; i += 1) {
       if (horizontal[i] === played) {
-        inARow++;
-      }
-      else {
+        inARow += 1;
+      } else {
         break;
       }
     }
-    for (let j = y-1; j >= 0; j--) {
+    for (let j = y - 1; j >= 0; j -= 1) {
       if (horizontal[j] === played) {
-        inARow++;
-      }
-      else {
+        inARow += 1;
+      } else {
         break;
       }
     }
@@ -113,44 +93,41 @@ class Board extends React.Component {
   }
   checkVerticalRows(x, y, played) {
     let inARow = 0;
-    for (let i = x; i < this.state.board.length; i++) {
+    for (let i = x; i < this.state.board.length; i += 1) {
       if (this.state.board[i][y] === played) {
-        inARow++;
-      }
-      else {
+        inARow += 1;
+      } else {
         break;
       }
     }
-    for (let j = x-1; j >= 0; j--) {
-      if(this.state.board[j][y] === played) {
-        inARow++;
-      }
-      else {
+    for (let j = x - 1; j >= 0; j -= 1) {
+      if (this.state.board[j][y] === played) {
+        inARow += 1;
+      } else {
         break;
       }
     }
     return inARow >= 5;
   }
   render() {
-    let rows;
-    let test = 0;
-    rows = this.state.board.map((value, key) => {
-      return value.map((innerValue, innerKey) => {
-        let coordinate = key + ',' + innerKey;
+    const rows = this.state.board.map((value, key) =>
+      value.map((innerValue, innerKey) => {
+        const coordinate = [key, innerKey];
         return (
             <Grid
-             key={coordinate}
-             coordinate={coordinate}
-             playerPiece={this.state.playerPiece}
-             playerTurnCount={this.state.playerTurnCount}
-          changeCoordinateState={this.changeCoordinateState.bind(this)}
+              key={coordinate}
+              coordinate={coordinate}
+              playerPiece={this.state.playerPiece}
+              playerTurnCount={this.state.playerTurnCount}
+              changeCoordinateState={(newCoord, played, turnCount) =>
+                this.changeCoordinateState(newCoord, played, turnCount)}
             />
-        )
-      });
-    });
-    return(
+        );
+      })
+    );
+    return (
       <div>{rows}</div>
-    )
+    );
   }
 }
 
