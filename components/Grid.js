@@ -11,7 +11,7 @@ class Grid extends React.Component {
   handleClick() {
     if(this.state.played === 0) {
       let turnCount = this.props.playerTurnCount;
-      turnCount = turnCount+1;
+      turnCount++;
       this.setState({
         played: this.props.playerPiece
       }, () => {

@@ -36,26 +36,100 @@ class Board extends React.Component {
     });
   }
   checkVictoryCondition(x, y, played) {
+    this.checkHorizontalRows(x, y, played);
+    this.checkVerticalRows(x, y, played);
+    this.checkMajorDiagonalRows(parseInt(x), parseInt(y), played);
+    console.log(this.checkMinorDiagonalRows(parseInt(x), parseInt(y), played));
+  }
+  checkMajorDiagonalRows(x, y, played) {
+    let inARow = 0;
+    for (let i = 0; i <= 5; i++) {
+      if (this.state.board[x+i][y+i] === played) {
+        inARow++;
+      }
+      else {
+        break;
+      }
+    }
+    for (let j = 1; j <= 5; j++) {
+      if (x-j < 0 || y-j < 0) {
+        break;
+      }     
+      if (this.state.board[x-j][y-j] === played) {
+        inARow++;
+      }
+      else {
+        break;
+      }
+    }
+    return inARow >= 5;
+  }
+  checkMinorDiagonalRows(x, y, played){
+    let inARow = 0;
+    for (let i = 0; i <= 5; i++) {
+      if (y-i < 0){
+        break;
+      }
+      if (this.state.board[x+i][y-i] === played) {
+        inARow++;
+      }
+      else {
+        break;
+      }
+    }
+    for (let j = 1; j <= 5; j++) {
+      if (x-j < 0) {
+        break;
+      }     
+      if (this.state.board[x-j][y+j] === played) {
+        inARow++;
+      }
+      else {
+        break;
+      }
+    }
+    return inARow >= 5;
+  }
+  checkHorizontalRows(x, y, played) { 
     let horizontal = this.state.board[x];
-    let vertical = this.state.board[y];
-    let winCondition = 0;
-    for (let i = y; i < this.state.board[x].length; i++) {
-      if (this.state.board[x][i] === played) {
-        winCondition++;
+    let inARow = 0;
+    for (let i = y; i < horizontal.length; i++) {
+      if (horizontal[i] === played) {
+        inARow++;
       }
       else {
         break;
       }
     }
     for (let j = y-1; j >= 0; j--) {
-      if(this.state.board[x][j] === played) {
-        winCondition++;
+      if (horizontal[j] === played) {
+        inARow++;
       }
       else {
         break;
       }
     }
-    console.log(winCondition)
+    return inARow >= 5;
+  }
+  checkVerticalRows(x, y, played) {
+    let inARow = 0;
+    for (let i = x; i < this.state.board.length; i++) {
+      if (this.state.board[i][y] === played) {
+        inARow++;
+      }
+      else {
+        break;
+      }
+    }
+    for (let j = x-1; j >= 0; j--) {
+      if(this.state.board[j][y] === played) {
+        inARow++;
+      }
+      else {
+        break;
+      }
+    }
+    return inARow >= 5;
   }
   render() {
     let rows;
