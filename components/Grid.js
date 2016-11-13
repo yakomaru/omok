@@ -8,12 +8,14 @@ class Grid extends React.Component {
       'played': 0
     };
   }
-  handleClick(){
+  handleClick() {
     if(this.state.played === 0) {
+      let turnCount = this.props.playerTurnCount;
+      turnCount++;
       this.setState({
-        played: this.props.playerTurn
+        played: this.props.playerPiece
       }, () => {
-        this.props.changeCoordinateState(this.props.coordinate, this.state.played);
+        this.props.changeCoordinateState(this.props.coordinate, this.state.played, turnCount);
       });
     }
   }
