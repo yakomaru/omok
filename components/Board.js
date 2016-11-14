@@ -2,7 +2,7 @@ import React from 'react';
 import _ from 'lodash';
 import Grid from './Grid';
 
-const BOARD_SIZE = 19;
+const BOARD_SIZE = 15;
 const buildColumn = () => _.fill(Array(BOARD_SIZE), 0);
 const buildRows = () => _.map(Array(BOARD_SIZE), buildColumn);
 
@@ -14,27 +14,31 @@ class Board extends React.Component {
       board: BOARD,
       playerPiece: 1,
       playerTurnCount: 0,
+      victoryMessage: null
     };
   }
   changeCoordinateState(newCoord, played, turnCount) {
     const newBoard = this.state.board;
-    const newTurn = this.state.playerPiece > 0 ? -1 : 1;
+    const newTurn = this.state.playerPiece > 1 ? 1 : 2;
     newBoard[newCoord[0]][newCoord[1]] = played;
-    this.setState({
-      board: newBoard,
-      playerPiece: newTurn,
-      playerTurnCount: turnCount,
-    }, () => {
-      if (turnCount >= 9) {
-        this.checkVictoryCondition(newCoord[0], newCoord[1], played);
-      }
-    });
+    if (turnCount >= 9 && this.checkVictoryCondition(newCoord[0], newCoord[1], played)) {
+      this.setState({
+        victoryMessage: 'Player ' + this.state.playerPiece + ' has won'
+      });
+    }
+    else {
+      this.setState({
+        board: newBoard,
+        playerPiece: newTurn,
+        playerTurnCount: turnCount,
+      });
+    }
   }
   checkVictoryCondition(x, y, played) {
-    console.log(this.checkHorizontalRows(x, y, played) ||
-    this.checkVerticalRows(x, y, played) ||
-    this.checkMajorDiagonalRows(x, y, played) ||
-    this.checkMinorDiagonalRows(x, y, played));
+    return this.checkHorizontalRows(x, y, played) ||
+           this.checkVerticalRows(x, y, played) ||
+           this.checkMajorDiagonalRows(x, y, played) ||
+           this.checkMinorDiagonalRows(x, y, played);
   }
   checkMajorDiagonalRows(x, y, played) {
     let inARow = 0;
@@ -126,7 +130,14 @@ class Board extends React.Component {
       })
     );
     return (
-      <div>{rows}</div>
+      <div className="board-outer">
+        <div className="board-container">
+          <div className="board-inner">{rows}</div>
+        </div>
+        <div className="victory-message">
+          {this.state.victoryMessage}
+        </div>
+      </div>
     );
   }
 }

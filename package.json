@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "test": "mocha tests/.setup.js tests/**/*-test.js",
-    "coverage": "nyc mocha tests/.setup.js tests/**/*-test.js"
+    "test": "mocha tests/.setup.js tests/**/*-test.js -R nyan",
+    "coverage": "nyc mocha tests/.setup.js tests/**/*-test.js -R nyan"
   },
   "license": "ISC",
   "nyc": {
@@ -54,6 +54,7 @@
     "mocha": "^3.1.2",
     "nyc": "^8.4.0",
     "react-addons-test-utils": "^15.3.2",
+    "sinon": "^1.17.6",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"
   }
