@@ -1,13 +1,83 @@
 body{
-  margin: 0;
 }
-.grid-space { 
+
+.board-outer {
+  margin-left: 20px;
+  margin-top: 20px;
+  width: 785px;
+  height: 785px;
+  border: 1px solid #808a9b;
+  box-shadow:
+  0 0 0 1px hsla(231,100%,4%,1),
+  0 0 0 2px hsla(212,22%,59%,1);
+}
+/*.board-outer:after {
+  border: 2px solid #8e98a8;
+}*/
+
+.board-container {
+  margin-left: 20px;
+  margin-top: 20px;
+  width: 740px;
+  height: 740px;
+  border: 2px solid #c7cbcf;
+}
+
+.board-inner {
+  margin-left: 25px;
+  margin-top: 15px;
+}
+.grid {
+  margin-top: -8px;
+  margin-left: -8px;
+  border-radius: 50%;
+  display: block;
+  width: 15px;
+  height: 15px;
+}
+
+.cross {
+  margin-left: -3px;
+  margin-top: -10px;
+  width: 1px;
+  height: 5px;
+  position: relative;
+  left: 2px;
+  background: #828282;
+}
+.cross:after{
+  background: #828282;
+  content: "";
+  height: 1px;
+  left: -2px;
+  top: 2px;
+  width:5px;
+  position: absolute;
+}
+.grid-space {
   float: left;
-  width: 40px;
-  height: 40px;
+  width: 45px;
+  height: 46px;
+  border-left: 1px solid #cbcdcf;
+  border-top: 1px solid #cbcdcf;
+}
+.player-one {
+  margin-left: -11px;
+  margin-top: -8px;
+  width: 22px;
+  height: 22px;
+  background: url("./assets/Pig.png");
+}
+
+.player-two {
+  margin-left: -10px;
+  margin-top: -9px;
+  width: 23px;
+  height: 22px;
+  background: url("./assets/Slime.png");
 }
 
 #container {
-  width: 760px;
-  height: 760px;
+  width: 1000px;
+  height: 1000px;
 }
