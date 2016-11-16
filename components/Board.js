@@ -14,7 +14,7 @@ class Board extends React.Component {
       board: BOARD,
       playerPiece: 1,
       playerTurnCount: 0,
-      victoryMessage: null
+      victoryMessage: null,
     };
   }
   changeCoordinateState(newCoord, played, turnCount) {
@@ -23,16 +23,14 @@ class Board extends React.Component {
     newBoard[newCoord[0]][newCoord[1]] = played;
     if (turnCount >= 9 && this.checkVictoryCondition(newCoord[0], newCoord[1], played)) {
       this.setState({
-        victoryMessage: 'Player ' + this.state.playerPiece + ' has won'
+        victoryMessage: `Player ${this.state.playerPiece} has won`,
       });
     }
-    else {
-      this.setState({
-        board: newBoard,
-        playerPiece: newTurn,
-        playerTurnCount: turnCount,
-      });
-    }
+    this.setState({
+      board: newBoard,
+      playerPiece: newTurn,
+      playerTurnCount: turnCount,
+    });
   }
   checkVictoryCondition(x, y, played) {
     return this.checkHorizontalRows(x, y, played) ||
@@ -118,14 +116,14 @@ class Board extends React.Component {
       value.map((innerValue, innerKey) => {
         const coordinate = [key, innerKey];
         return (
-            <Grid
-              key={coordinate}
-              coordinate={coordinate}
-              playerPiece={this.state.playerPiece}
-              playerTurnCount={this.state.playerTurnCount}
-              changeCoordinateState={(newCoord, played, turnCount) =>
-                this.changeCoordinateState(newCoord, played, turnCount)}
-            />
+          <Grid
+            key={coordinate}
+            coordinate={coordinate}
+            playerPiece={this.state.playerPiece}
+            playerTurnCount={this.state.playerTurnCount}
+            changeCoordinateState={(newCoord, played, turnCount) =>
+              this.changeCoordinateState(newCoord, played, turnCount)}
+          />
         );
       })
     );
