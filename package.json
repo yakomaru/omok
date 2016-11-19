@@ -39,6 +39,7 @@
     "babel-register": "^6.18.0",
     "babelify": "^7.3.0",
     "browserify": "^13.1.1",
+    "bufferutil": "^1.2.1",
     "chai": "^3.5.0",
     "coveralls": "^2.11.15",
     "enzyme": "^2.6.0",
@@ -48,6 +49,7 @@
     "eslint-plugin-import": "^2.2.0",
     "eslint-plugin-jsx-a11y": "^2.2.3",
     "eslint-plugin-react": "^6.7.1",
+    "express": "^4.14.0",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "istanbul": "^0.4.5",
@@ -56,6 +58,8 @@
     "nyc": "^8.4.0",
     "react-addons-test-utils": "^15.3.2",
     "sinon": "^1.17.6",
+    "socket.io": "^1.5.1",
+    "utf-8-validate": "^1.2.1",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"
   }

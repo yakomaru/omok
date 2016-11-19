@@ -1,7 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import Grid from './Grid';
-
+const socket = io();
 const BOARD_SIZE = 15;
 const buildColumn = () => _.fill(Array(BOARD_SIZE), 0);
 const buildRows = () => _.map(Array(BOARD_SIZE), buildColumn);
@@ -17,6 +17,12 @@ class Board extends React.Component {
       victoryMessage: null,
     };
   }
+  componentDidMount() {
+    socket.on('news', function (data) {
+      console.log(data)
+    });
+  }
+
   changeCoordinateState(newCoord, played, turnCount) {
     const newBoard = this.state.board;
     const newTurn = this.state.playerPiece > 1 ? 1 : 2;
