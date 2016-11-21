@@ -168,9 +168,20 @@ class Board extends React.Component {
     const rows = this.state.board.map((value, key) =>
       value.map((innerValue, innerKey) => {
         const coordinate = [key, innerKey];
+        let omokPiece = 'grid'
+        if (innerValue > 1) {
+          omokPiece = 'player-two';
+        }
+        else if (innerValue === 0){
+          omokPiece = 'grid';
+        }
+        else {
+          omokPiece = 'player-one';
+        }
         return (
           <Grid
             key={coordinate}
+            omokPiece={omokPiece}
             coordinate={coordinate}
             playerPiece={this.state.playerPiece}
             playerTurnCount={this.state.playerTurnCount}

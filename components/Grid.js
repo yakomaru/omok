@@ -26,7 +26,7 @@ class Grid extends React.Component {
   render() {
     return(
       <div className="grid-space">
-        <div className={this.state.playerPiece} id={this.props.coordinate} onClick={() => this.handleClick()}>
+        <div className={this.props.omokPiece} id={this.props.coordinate} onClick={() => this.handleClick()}>
         </div>
         <div className="cross">
         </div>
