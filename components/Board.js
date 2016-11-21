@@ -16,6 +16,7 @@ class Board extends React.Component {
       playerPiece: 1,
       playerTurnCount: 0,
       victoryMessage: null,
+      submit: '',
       value: '',
     };
   }
@@ -37,7 +38,7 @@ class Board extends React.Component {
     const gameRoomId = `${Math.floor(Math.random() * 10000000)}`;
     console.log(gameRoomId)
     this.setState({
-      value: gameRoomId
+      submit: gameRoomId
     });
     socket.emit('createGame', { gameRoomId, socketId: socket.id, player: 1 });
   }
@@ -46,15 +47,25 @@ class Board extends React.Component {
     e.preventDefault();
     let gameRoomId = this.state.value;
     socket.emit('joinGameRoom', { gameRoomId, socketId: socket.id, player: 2 });
+    this.setState({
+      submit: this.state.value
+    });
   }
 
   sendOmokMove(board, piece, turnCount){
-    const data = { board, piece, turnCount, gameRoomId: this.state.value };
+    const data = { board, piece, turnCount, gameRoomId: this.state.submit };
     socket.emit('onPlayerMove', data);
   }
 
   handleBoardState(data){
-      console.log(data);
+    console.log(data);
+    this.setState({
+      board: data.board,
+      playerPiece: data.piece,
+      playerTurnCount: data.turnCount,
+    }, () => {
+      console.log('click')
+    });
   }
 
   changeCoordinateState(newCoord, played, turnCount) {
@@ -71,7 +82,7 @@ class Board extends React.Component {
       playerPiece: newTurn,
       playerTurnCount: turnCount,
     }, () => {    
-      this.sendOmokMove(this.state.board, this.state.playerPiece, this.stateplayerTurnCount);
+      this.sendOmokMove(this.state.board, this.state.playerPiece, this.state.playerTurnCount);
     });
   }
   checkVictoryCondition(x, y, played) {
