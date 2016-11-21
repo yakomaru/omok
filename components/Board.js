@@ -6,6 +6,7 @@ const BOARD_SIZE = 15;
 const buildColumn = () => _.fill(Array(BOARD_SIZE), 0);
 const buildRows = () => _.map(Array(BOARD_SIZE), buildColumn);
 
+
 class Board extends React.Component {
   constructor() {
     super();
@@ -15,12 +16,45 @@ class Board extends React.Component {
       playerPiece: 1,
       playerTurnCount: 0,
       victoryMessage: null,
+      value: '',
     };
   }
   componentDidMount() {
-    socket.on('news', function (data) {
-      console.log(data)
+    socket.on('connected', (data) => {
+      console.log(data);
     });
+    socket.on('changeBoardState', (data) => {this.handleBoardState(data)});
+    socket.on('playerJoinedRoom', (data) => {
+      console.log(`Player has joined ${data.gameRoomId}`);
+    }); 
+  }
+
+  handleJoinRoom(e) {
+    this.setState({value: e.target.value});
+  }
+  createGameRoom(e) {
+    e.preventDefault();
+    const gameRoomId = `${Math.floor(Math.random() * 10000000)}`;
+    console.log(gameRoomId)
+    this.setState({
+      value: gameRoomId
+    });
+    socket.emit('createGame', { gameRoomId, socketId: socket.id, player: 1 });
+  }
+
+  joinGameRoom(e) {
+    e.preventDefault();
+    let gameRoomId = this.state.value;
+    socket.emit('joinGameRoom', { gameRoomId, socketId: socket.id, player: 2 });
+  }
+
+  sendOmokMove(board, piece, turnCount){
+    const data = { board, piece, turnCount, gameRoomId: this.state.value };
+    socket.emit('onPlayerMove', data);
+  }
+
+  handleBoardState(data){
+      console.log(data);
   }
 
   changeCoordinateState(newCoord, played, turnCount) {
@@ -36,6 +70,8 @@ class Board extends React.Component {
       board: newBoard,
       playerPiece: newTurn,
       playerTurnCount: turnCount,
+    }, () => {    
+      this.sendOmokMove(this.state.board, this.state.playerPiece, this.stateplayerTurnCount);
     });
   }
   checkVictoryCondition(x, y, played) {
@@ -134,13 +170,25 @@ class Board extends React.Component {
       })
     );
     return (
-      <div className="board-outer">
-        <div className="board-container">
-          <div className="board-inner">{rows}</div>
+      <div className="other">
+        <div className="board-outer">
+          <div className="board-container">
+            <div className="board-inner">{rows}</div>
+          </div>
+          <div className="victory-message">
+            {this.state.victoryMessage}
+          </div>
         </div>
-        <div className="victory-message">
-          {this.state.victoryMessage}
+        <div className="buttons">
+          <button id="btn-create-game" onClick={(e) => this.createGameRoom(e)}>create</button>
         </div>
+        <form onSubmit={(e) => this.joinGameRoom(e)}>
+          <label>
+            Join:
+            <input type="text" value={this.state.value} onChange={(e) => this.handleJoinRoom(e)} />
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
       </div>
     );
   }

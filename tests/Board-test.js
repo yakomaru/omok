@@ -1,4 +1,7 @@
 import React from 'react';
+const http = require('http').Server(app);
+const io = require('socket.io');
+const ioc = require('socket.io-client');
 import ReactTestUtils from 'react-addons-test-utils'
 import { expect } from 'chai';
 import { shallow, mount, render } from 'enzyme';
