@@ -16,6 +16,7 @@ class Board extends React.Component {
       playerPiece: 1,
       playerTurnCount: 0,
       victoryMessage: null,
+      whichPlayer: '',
       submit: '',
       value: '',
     };
@@ -38,7 +39,8 @@ class Board extends React.Component {
     const gameRoomId = `${Math.floor(Math.random() * 10000000)}`;
     console.log(gameRoomId)
     this.setState({
-      submit: gameRoomId
+      submit: gameRoomId,
+      whichPlayer: 1,
     });
     socket.emit('createGame', { gameRoomId, socketId: socket.id, player: 1 });
   }
@@ -48,7 +50,8 @@ class Board extends React.Component {
     let gameRoomId = this.state.value;
     socket.emit('joinGameRoom', { gameRoomId, socketId: socket.id, player: 2 });
     this.setState({
-      submit: this.state.value
+      submit: this.state.value,
+      whichPlayer: 2,
     });
   }
 
@@ -69,21 +72,23 @@ class Board extends React.Component {
   }
 
   changeCoordinateState(newCoord, played, turnCount) {
-    const newBoard = this.state.board;
-    const newTurn = this.state.playerPiece > 1 ? 1 : 2;
-    newBoard[newCoord[0]][newCoord[1]] = played;
-    if (turnCount >= 9 && this.checkVictoryCondition(newCoord[0], newCoord[1], played)) {
+    if (this.state.whichPlayer == this.state.playerPiece) {
+      const newBoard = this.state.board;
+      const newTurn = this.state.playerPiece > 1 ? 1 : 2;
+      newBoard[newCoord[0]][newCoord[1]] = played;
+      if (turnCount >= 9 && this.checkVictoryCondition(newCoord[0], newCoord[1], played)) {
+        this.setState({
+          victoryMessage: `Player ${this.state.playerPiece} has won`,
+        });
+      }
       this.setState({
-        victoryMessage: `Player ${this.state.playerPiece} has won`,
+        board: newBoard,
+        playerPiece: newTurn,
+        playerTurnCount: turnCount,
+      }, () => {    
+        this.sendOmokMove(this.state.board, this.state.playerPiece, this.state.playerTurnCount);
       });
     }
-    this.setState({
-      board: newBoard,
-      playerPiece: newTurn,
-      playerTurnCount: turnCount,
-    }, () => {    
-      this.sendOmokMove(this.state.board, this.state.playerPiece, this.state.playerTurnCount);
-    });
   }
   checkVictoryCondition(x, y, played) {
     return this.checkHorizontalRows(x, y, played) ||
@@ -180,7 +185,6 @@ class Board extends React.Component {
         }
         return (
           <Grid
-            key={coordinate}
             omokPiece={omokPiece}
             coordinate={coordinate}
             playerPiece={this.state.playerPiece}
