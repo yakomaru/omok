@@ -1,5 +1,10 @@
-const checkMajorDiagonalRows = (x, y, played, board, length) => {
+const checkMajorDiagonalRows = (data) => {
   let inARow = 0;
+  let length = data.length;
+  let board = data.board;
+  let x = data.x;
+  let y = data.y;
+  let played = data.piecePlayed;
   for (let i = 0; i < length; i += 1) {
     if (board[x + i] && board[x + i][y + i] === played) {
       inARow += 1;
@@ -16,8 +21,13 @@ const checkMajorDiagonalRows = (x, y, played, board, length) => {
   }
   return inARow >= length;
 }
-const checkMinorDiagonalRows = (x, y, played, board, length) => {
+const checkMinorDiagonalRows = (data) => {
   let inARow = 0;
+  let length = data.length;
+  let board = data.board;
+  let x = data.x;
+  let y = data.y; 
+  let played = data.piecePlayed;
   for (let i = 0; i < length; i += 1) {
     if (board[x + i] && board[x + i][y - i] === played) {
       inARow += 1;
@@ -34,9 +44,14 @@ const checkMinorDiagonalRows = (x, y, played, board, length) => {
   }
   return inARow >= length;
 }
-const checkHorizontalRows = (x, y, played, board, length) => {
-  const horizontal = board[x];
+const checkHorizontalRows = (data) => {
   let inARow = 0;
+  let length = data.length;
+  let board = data.board;
+  let x = data.x;
+  let y = data.y; 
+  const horizontal = board[x];
+  let played = data.piecePlayed;
   for (let i = 0; i < length; i += 1) {
     if (horizontal[y + i] === played) {
       inARow += 1;
@@ -53,8 +68,13 @@ const checkHorizontalRows = (x, y, played, board, length) => {
   }
   return inARow >= length;
 }
-const checkVerticalRows = (x, y, played, board, length) => {
+const checkVerticalRows = (data) => {
   let inARow = 0;
+  let length = data.length;
+  let board = data.board;
+  let x = data.x;
+  let y = data.y; 
+  let played = data.piecePlayed;
   for (let i = 0; i < length; i += 1) {
     if (board[x + i][y] === played) {
       inARow += 1;
@@ -71,11 +91,11 @@ const checkVerticalRows = (x, y, played, board, length) => {
   }
   return inARow >= length;
 }
-const checkVictoryCondition = (x, y, played, board, length) => {
-    return checkHorizontalRows(x, y, played, board, length) ||
-           checkVerticalRows(x, y, played, board, length) ||
-           checkMajorDiagonalRows(x, y, played, board, length) ||
-           checkMinorDiagonalRows(x, y, played, board, length);
+const checkVictoryCondition = (data) => {
+    return checkHorizontalRows(data) ||
+           checkVerticalRows(data) ||
+           checkMajorDiagonalRows(data) ||
+           checkMinorDiagonalRows(data);
 }
 export { checkVictoryCondition, 
          checkHorizontalRows, 

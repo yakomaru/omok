@@ -14,7 +14,7 @@ class Board extends React.Component {
     const BOARD = buildRows();
     this.state = {
       board: BOARD,
-      playerPiece: 1,
+      piecePlayed: 1,
       playerTurnCount: 0,
       victoryMessage: null,
       value: '',
@@ -28,7 +28,7 @@ class Board extends React.Component {
       console.log(`Player has joined ${data.gameRoomId}`);
     });
     socket.on('changeCoordinateState', (data) => {
-      this.changeCoordinateState(data.newCoord, data.turnCount)
+      this.changeCoordinateState(data)
     });
     socket.on('changeBoardState', (data) => {this.changeBoardState(data)});
   }
@@ -50,32 +50,41 @@ class Board extends React.Component {
 
   changeBoardState(data){
     this.setState({
-      board: data.newBoard,
-      playerPiece: data.newTurn,
+      board: data.board,
+      piecePlayed: data.piecePlayed,
       playerTurnCount: data.turnCount,
     });
   }
 
   onClickHandler(newCoord, turnCount) {
-    console.log(checkDoubleThrees(newCoord[0], newCoord[1], this.state.playerPiece, this.state.board));
-    socket.emit('onMoveClick', { newCoord, turnCount, role: this.state.playerPiece });
+    let data = { 
+      x: newCoord[0],
+      y: newCoord[1],
+      piecePlayed: this.state.piecePlayed,
+      board: this.state.board,
+      turnCount,
+    };
+    console.log(checkDoubleThrees(data));
+    socket.emit('onMoveClick', data);
   }
-  changeCoordinateState(newCoord, turnCount) {
-    const newBoard = this.state.board;
-    const playedPiece = this.state.playerPiece;
-    const newTurn = playedPiece > 1 ? 1 : 2;
-    newBoard[newCoord[0]][newCoord[1]] = playedPiece;
-    if (turnCount >= 9 && checkVictoryCondition(newCoord[0], newCoord[1], playedPiece, newBoard, 5)) {
+  changeCoordinateState(data) {
+    console.log(data);
+    data.length = 5;
+    data.board = this.state.board;
+    let nextPlayerPiece = this.state.piecePlayed > 1 ? 1 : 2;
+    data.board[data.x][data.y] = data.piecePlayed;
+    if (data.turnCount >= 9 && checkVictoryCondition(data)) {
       this.setState({
-        victoryMessage: `Player ${playedPiece} has won`,
+        victoryMessage: `Player ${data.piecePlayed} has won`,
       });
     }
     this.setState({
-      board: newBoard,
-      playerPiece: newTurn,
-      playerTurnCount: turnCount,
-    }, () => {    
-      socket.emit('onPlayerMove', { newBoard, newTurn, turnCount });
+      board: data.board,
+      piecePlayed: nextPlayerPiece,
+      playerTurnCount: data.turnCount,
+    }, () => {
+      data.piecePlayed = this.state.piecePlayed;
+      socket.emit('onPlayerMove', data);
     });
   }
 

@@ -1,102 +1,94 @@
 import { checkVictoryCondition } from './VictoryLogic.js';
-const checkUpperMinorDiagonal = (x, y, played, board, length) => {
+const checkUpperMinorDiagonal = (data, distanceFromPlacedPiece) => {
   let inARow = 0;
-  let distanceFromPlacedPiece = 1;
-  for (let i = distanceFromPlacedPiece; i < length; i += 1) {
-    if (board[x + i] && board[x + i][y - i] === played) {
+  for (let i = distanceFromPlacedPiece; i < data.length; i += 1) {
+    if (data.board[data.x + i] && data.board[data.x + i][data.y - i] === data.piecePlayed) {
       inARow += 1;
     }
   }
-  return inARow === length - distanceFromPlacedPiece;
+  return inARow === data.length - distanceFromPlacedPiece;
 }
-const checkLowerMinorDiagonal = (x, y, played, board, length) => {
+const checkLowerMinorDiagonal = (data, distanceFromPlacedPiece) => {
   let inARow = 0;
-  let distanceFromPlacedPiece = 1;
-  for (let i = distanceFromPlacedPiece; i < length; i += 1) {
-    if (board[x - i] && board[x - i][y - i] === played) {
+  for (let i = distanceFromPlacedPiece; i < data.length; i += 1) {
+    if (data.board[data.x - i] && data.board[data.x - i][data.y - i] === data.piecePlayed) {
       inARow += 1;
     }
   }
-  return inARow === length - distanceFromPlacedPiece;
+  return inARow === data.length - distanceFromPlacedPiece;
 }
-const checkUpperMajorDiagonal = (x, y, played, board, length) => {
+const checkUpperMajorDiagonal = (data, distanceFromPlacedPiece) => {
   let inARow = 0;
-  let distanceFromPlacedPiece = 1;
-  for (let i = distanceFromPlacedPiece; i < length; i += 1) {
-    if (board[x + i] && board[x + i][y + i] === played) {
+  for (let i = distanceFromPlacedPiece; i < data.length; i += 1) {
+    if (data.board[data.x + i] && data.board[data.x + i][data.y + i] === data.piecePlayed) {
       inARow += 1;
     }
   }
-  return inARow === length - distanceFromPlacedPiece;
+  return inARow === data.length - distanceFromPlacedPiece;
 }
 
-const checkLowerMajorDiagonal = (x, y, played, board, length) => {
+const checkLowerMajorDiagonal = (data, distanceFromPlacedPiece) => {
   let inARow = 0;
-  let distanceFromPlacedPiece = 1;
-  for (let i = distanceFromPlacedPiece; i < length; i += 1) {
-    if (board[x - i] && board[x - i][y - i] === played) {
+  for (let i = distanceFromPlacedPiece; i < data.length; i += 1) {
+    if (data.board[data.x - i] && data.board[data.x - i][data.y - i] === data.piecePlayed) {
       inARow += 1;
     }
   }
-  return inARow === length - distanceFromPlacedPiece;
+  return inARow === data.length - distanceFromPlacedPiece;
 }
-const checkUpperVertical = (x, y, played, board, length) => {
+const checkUpperVertical = (data, distanceFromPlacedPiece) => {
   let inARow = 0;
-  let distanceFromPlacedPiece = 1;
-   for (let i = distanceFromPlacedPiece; i < length; i += 1) {
-    if (board[x + i][y] === played) {
+  for (let i = distanceFromPlacedPiece; i < data.length; i += 1) {
+    if (data.board[data.x + i] && data.board[data.x + i][data.y] === data.piecePlayed) {
       inARow += 1;
     }
   }
-  return inARow === length - distanceFromPlacedPiece;
+  return inARow === data.length - distanceFromPlacedPiece;
 }
-const checkLowerVertical = (x, y, played, board, length) => {
+const checkLowerVertical = (data, distanceFromPlacedPiece) => {
   let inARow = 0;
-  let distanceFromPlacedPiece = 1;
-  for (let i = distanceFromPlacedPiece; i < length; i += 1) {
-    if (board[x - i][y] === played) {
+  for (let i = distanceFromPlacedPiece; i < data.length; i += 1) {
+    if (data.board[data.x - i] && data.board[data.x - i][data.y] === data.piecePlayed) {
       inARow += 1;
     }
   }
-  return inARow === length - distanceFromPlacedPiece;
+  return inARow === data.length - distanceFromPlacedPiece;
 }
-const checkRightHorizontal = (x, y, played, board, length) => {
-  const horizontal = board[x];
+const checkRightHorizontal = (data, distanceFromPlacedPiece) => {
   let inARow = 0;
-  let distanceFromPlacedPiece = 1;
-  for (let i = distanceFromPlacedPiece; i < length; i += 1) {
-    if (horizontal[y + i] === played) {
+  const horizontal = data.board[data.x];
+  for (let i = distanceFromPlacedPiece; i < data.length; i += 1) {
+    if (horizontal[data.y + i] && horizontal[data.y + i] === data.piecePlayed) {
       inARow += 1;
     }
   }
-  return inARow === length - distanceFromPlacedPiece;
+  return inARow === data.length - distanceFromPlacedPiece;
 }
-const checkLeftHorizontal = (x, y, played, board, length) => {
-  const horizontal = board[x];
+const checkLeftHorizontal = (data, distanceFromPlacedPiece) => {
   let inARow = 0;
-  let distanceFromPlacedPiece = 1;
-  for (let i = distanceFromPlacedPiece; i < length; i += 1) {
-    if (horizontal[y - i] === played) {
+  const horizontal = data.board[data.x];
+  for (let i = distanceFromPlacedPiece; i < data.length; i += 1) {
+    if (horizontal[data.y - i] && horizontal[data.y - i] === data.piecePlayed) {
       inARow += 1;
     }
   }
-  console.log(inARow)
-  return inARow === length - 1;
+  return inARow === data.length - distanceFromPlacedPiece;
 }
 
-const checkDoubleThrees = (x, y, played, board) => {
-  if (checkVictoryCondition(x, y, played, board, 4)) {
+const checkDoubleThrees = (data) => {
+  data.length = 4;
+  if (checkVictoryCondition(data)){
     return false;
   }
   let possibleThrees = { 
-    topVert: checkUpperVertical(x, y, played, board, 3),
-    botVer: checkLowerVertical(x, y, played, board, 3),
-    leftHoriz:checkLeftHorizontal(x, y, played, board, 3), 
-    rightHoriz: checkRightHorizontal(x, y, played, board, 3),
-    topMinor: checkUpperMinorDiagonal(x, y, played, board, 3),
-    botMinor: checkLowerMinorDiagonal(x, y, played, board, 3),
-    topMajor: checkUpperMajorDiagonal(x, y, played, board, 3),
-    botMajor: checkLowerMajorDiagonal(x, y, played, board, 3),
+    topVert: checkUpperVertical(data, 1),
+    botVer: checkLowerVertical(data, 1),
+    leftHoriz:checkLeftHorizontal(data, 1), 
+    rightHoriz: checkRightHorizontal(data, 1),
+    topMinor: checkUpperMinorDiagonal(data, 1),
+    botMinor: checkLowerMinorDiagonal(data, 1),
+    topMajor: checkUpperMajorDiagonal(data, 1),
+    botMajor: checkLowerMajorDiagonal(data, 1),
   };
   let counter = 0;
   for(var i in possibleThrees){
