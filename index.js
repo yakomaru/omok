@@ -24,20 +24,25 @@ http.listen(3000, function(){
 
 
 io.on('connection', function (socket) {
+  var game = {};
   socket.emit('connected', { message: 'connected'});
-  socket.on('createGame', function(data){
-    console.log(typeof data.gameRoomId);
-    socket.join(data.gameRoomId);
-    io.sockets.to(data.gameRoomId).emit('playerJoinedRoom', { gameRoomId: data.gameRoomId });
-    console.log(io.sockets.adapter.rooms);
-  });
   socket.on('joinGameRoom', function(data){
-    console.log(typeof data.gameRoomId)
-    socket.join(data.gameRoomId);
-    io.sockets.to(data.gameRoomId).emit('playerJoinedRoom', { gameRoomId: data.gameRoomId });
-    console.log(io.sockets.adapter.rooms);
+    game.roomId = data.gameRoomId;
+    socket.join(game.roomId);
+    //console.log(io.sockets.adapter.rooms);
+    //console.log(data)
+    if(data.role === 'host'){
+      game.hostId = data.socketId;
+    }
+    io.sockets.to(game.roomId).emit('playerJoinedRoom', { gameRoomId: game.roomId });
+  });
+  socket.on('onMoveClick', function(data){
+    console.log(game.hostId)
+    if (data.role == 1  && game.hostId || data.role == 2 && !game.hostId) {
+      socket.emit('changeCoordinateState', data);
+    }
   });
   socket.on('onPlayerMove', function(data){
-    io.sockets.in(data.gameRoomId).emit('changeBoardState', data);
+    io.sockets.in(game.roomId).emit('changeBoardState', data);
   });
 });

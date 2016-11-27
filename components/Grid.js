@@ -4,20 +4,11 @@ import _ from 'lodash';
 class Grid extends React.Component {
   constructor() {
     super();
-    this.state = {
-      'played': 0,
-    };
   }
   handleClick() {
-    if(this.state.played === 0) {
-      let turnCount = this.props.playerTurnCount;
-      turnCount++;
-      this.setState({
-        played: this.props.playerPiece,
-      }, () => {
-        this.props.changeCoordinateState(this.props.coordinate, this.state.played, turnCount);
-      });
-    }
+    let turnCount = this.props.playerTurnCount;
+    turnCount++;
+    this.props.onClickHandler(this.props.coordinate, turnCount);
   }
   render() {
     return(
