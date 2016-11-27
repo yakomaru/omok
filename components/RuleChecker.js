@@ -1,19 +1,30 @@
-import { checkVictoryCondition } from './VictoryLogic.js';
 const checkUpperMinorDiagonal = (data, distanceFromPlacedPiece) => {
   let inARow = 0;
   for (let i = distanceFromPlacedPiece; i < data.length; i += 1) {
-    if (data.board[data.x + i] && data.board[data.x + i][data.y - i] === data.piecePlayed) {
+    if (data.board[data.y - i] && data.board[data.x + i][data.y - i] === data.piecePlayed) {
       inARow += 1;
     }
+    else if (data.checkBreak) {
+      break;
+    }
+  }
+  if (data.checkBreak) {
+    return inARow;
   }
   return inARow === data.length - distanceFromPlacedPiece;
 }
 const checkLowerMinorDiagonal = (data, distanceFromPlacedPiece) => {
   let inARow = 0;
   for (let i = distanceFromPlacedPiece; i < data.length; i += 1) {
-    if (data.board[data.x - i] && data.board[data.x - i][data.y - i] === data.piecePlayed) {
+    if (data.board[data.x - i] && data.board[data.x - i][data.y + i] === data.piecePlayed) {
       inARow += 1;
     }
+    else if (data.checkBreak) {
+      break;
+    }
+  }
+  if (data.checkBreak) {
+    return inARow;
   }
   return inARow === data.length - distanceFromPlacedPiece;
 }
@@ -23,6 +34,12 @@ const checkUpperMajorDiagonal = (data, distanceFromPlacedPiece) => {
     if (data.board[data.x + i] && data.board[data.x + i][data.y + i] === data.piecePlayed) {
       inARow += 1;
     }
+    else if (data.checkBreak) {
+      break;
+    }
+  }
+  if (data.checkBreak) {
+    return inARow;
   }
   return inARow === data.length - distanceFromPlacedPiece;
 }
@@ -33,6 +50,12 @@ const checkLowerMajorDiagonal = (data, distanceFromPlacedPiece) => {
     if (data.board[data.x - i] && data.board[data.x - i][data.y - i] === data.piecePlayed) {
       inARow += 1;
     }
+    else if (data.checkBreak) {
+      break;
+    }
+  }
+  if (data.checkBreak) {
+    return inARow;
   }
   return inARow === data.length - distanceFromPlacedPiece;
 }
@@ -42,6 +65,12 @@ const checkUpperVertical = (data, distanceFromPlacedPiece) => {
     if (data.board[data.x + i] && data.board[data.x + i][data.y] === data.piecePlayed) {
       inARow += 1;
     }
+    else if (data.checkBreak) {
+      break;
+    }
+  }
+  if (data.checkBreak) {
+    return inARow;
   }
   return inARow === data.length - distanceFromPlacedPiece;
 }
@@ -51,6 +80,12 @@ const checkLowerVertical = (data, distanceFromPlacedPiece) => {
     if (data.board[data.x - i] && data.board[data.x - i][data.y] === data.piecePlayed) {
       inARow += 1;
     }
+    else if (data.checkBreak) {
+      break;
+    }
+  }
+  if (data.checkBreak) {
+    return inARow;
   }
   return inARow === data.length - distanceFromPlacedPiece;
 }
@@ -61,6 +96,12 @@ const checkRightHorizontal = (data, distanceFromPlacedPiece) => {
     if (horizontal[data.y + i] && horizontal[data.y + i] === data.piecePlayed) {
       inARow += 1;
     }
+    else if (data.checkBreak) {
+      break;
+    }
+  }
+  if (data.checkBreak) {
+    return inARow;
   }
   return inARow === data.length - distanceFromPlacedPiece;
 }
@@ -71,15 +112,31 @@ const checkLeftHorizontal = (data, distanceFromPlacedPiece) => {
     if (horizontal[data.y - i] && horizontal[data.y - i] === data.piecePlayed) {
       inARow += 1;
     }
+    else if (data.checkBreak) {
+      break;
+    }
+  }
+  if (data.checkBreak) {
+    return inARow;
   }
   return inARow === data.length - distanceFromPlacedPiece;
 }
 
+const checkVictoryCondition = (data) => {
+  data.length = 5;
+  data.checkBreak = true;
+  return checkLeftHorizontal(data, 0) + checkRightHorizontal(data , 1) >= 5 ||
+         checkLowerVertical(data, 0) + checkUpperVertical(data, 1) >= 5 ||
+         checkLowerMajorDiagonal(data, 0) + checkUpperMajorDiagonal(data , 1) >= 5 ||
+         checkLowerMinorDiagonal(data, 0) + checkUpperMinorDiagonal(data, 1) >= 5;
+};
+
 const checkDoubleThrees = (data) => {
   data.length = 4;
-  if (checkVictoryCondition(data)){
+  if (checkVictoryCondition(data)) {
     return false;
   }
+  data.checkBreak = false;
   let possibleThrees = { 
     topVert: checkUpperVertical(data, 1),
     botVer: checkLowerVertical(data, 1),
@@ -91,7 +148,7 @@ const checkDoubleThrees = (data) => {
     botMajor: checkLowerMajorDiagonal(data, 1),
   };
   let counter = 0;
-  for(var i in possibleThrees){
+  for(var i in possibleThrees) {
     if(possibleThrees[i]) {
       counter++;
     }
@@ -100,4 +157,4 @@ const checkDoubleThrees = (data) => {
   return counter >= 2;
 };
 
-export { checkDoubleThrees }
+export { checkDoubleThrees, checkVictoryCondition }

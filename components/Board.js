@@ -1,8 +1,7 @@
 import React from 'react';
 import _ from 'lodash';
 import Grid from './Grid';
-import { checkVictoryCondition } from './VictoryLogic.js';
-import { checkDoubleThrees } from './DoubleThrees.js';
+import { checkDoubleThrees, checkVictoryCondition } from './RuleChecker.js';
 const socket = io();
 const BOARD_SIZE = 15;
 const buildColumn = () => _.fill(Array(BOARD_SIZE), 0);
@@ -64,11 +63,10 @@ class Board extends React.Component {
       board: this.state.board,
       turnCount,
     };
-    console.log(checkDoubleThrees(data));
+    checkDoubleThrees(data);
     socket.emit('onMoveClick', data);
   }
   changeCoordinateState(data) {
-    console.log(data);
     data.length = 5;
     data.board = this.state.board;
     let nextPlayerPiece = this.state.piecePlayed > 1 ? 1 : 2;
