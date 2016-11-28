@@ -38,7 +38,6 @@ io.on('connection', function (socket) {
   });
   socket.on('onMoveClick', function(data) {
     console.log(game.hostId)
-    console.log(data.piecePlayed)
     if (data.piecePlayed == 1  && game.hostId || data.piecePlayed == 2 && !game.hostId) {
       socket.emit('changeCoordinateState', data);
     }

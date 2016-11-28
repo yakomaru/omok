@@ -1,7 +1,8 @@
 const checkUpperMinorDiagonal = (data, distanceFromPlacedPiece) => {
   let inARow = 0;
   for (let i = distanceFromPlacedPiece; i < data.length; i += 1) {
-    if (data.board[data.y - i] && data.board[data.x + i][data.y - i] === data.piecePlayed) {
+    if ( data.board[data.x + i] && data.y - i >= 0 && 
+         data.board[data.x + i][data.y - i] === data.piecePlayed) {
       inARow += 1;
     }
     else if (data.checkBreak) {
@@ -16,7 +17,7 @@ const checkUpperMinorDiagonal = (data, distanceFromPlacedPiece) => {
 const checkLowerMinorDiagonal = (data, distanceFromPlacedPiece) => {
   let inARow = 0;
   for (let i = distanceFromPlacedPiece; i < data.length; i += 1) {
-    if (data.board[data.x - i] && data.board[data.x - i][data.y + i] === data.piecePlayed) {
+    if (data.x - i >= 0 && data.board[data.x - i][data.y + i] === data.piecePlayed) {
       inARow += 1;
     }
     else if (data.checkBreak) {
@@ -47,7 +48,8 @@ const checkUpperMajorDiagonal = (data, distanceFromPlacedPiece) => {
 const checkLowerMajorDiagonal = (data, distanceFromPlacedPiece) => {
   let inARow = 0;
   for (let i = distanceFromPlacedPiece; i < data.length; i += 1) {
-    if (data.board[data.x - i] && data.board[data.x - i][data.y - i] === data.piecePlayed) {
+    if (data.y - i > 0 && data.x - i >= 0 && 
+        data.board[data.x - i][data.y - i] === data.piecePlayed) {
       inARow += 1;
     }
     else if (data.checkBreak) {
@@ -77,7 +79,7 @@ const checkUpperVertical = (data, distanceFromPlacedPiece) => {
 const checkLowerVertical = (data, distanceFromPlacedPiece) => {
   let inARow = 0;
   for (let i = distanceFromPlacedPiece; i < data.length; i += 1) {
-    if (data.board[data.x - i] && data.board[data.x - i][data.y] === data.piecePlayed) {
+    if (data.x - i >= 0 && data.board[data.x - i][data.y] === data.piecePlayed) {
       inARow += 1;
     }
     else if (data.checkBreak) {
@@ -109,7 +111,7 @@ const checkLeftHorizontal = (data, distanceFromPlacedPiece) => {
   let inARow = 0;
   const horizontal = data.board[data.x];
   for (let i = distanceFromPlacedPiece; i < data.length; i += 1) {
-    if (horizontal[data.y - i] && horizontal[data.y - i] === data.piecePlayed) {
+    if (data.y - i >= 0 && horizontal[data.y - i] === data.piecePlayed) {
       inARow += 1;
     }
     else if (data.checkBreak) {
@@ -132,10 +134,10 @@ const checkVictoryCondition = (data) => {
 };
 
 const checkDoubleThrees = (data) => {
-  data.length = 4;
   if (checkVictoryCondition(data)) {
     return false;
   }
+  data.length = 3;
   data.checkBreak = false;
   let possibleThrees = { 
     topVert: checkUpperVertical(data, 1),
@@ -148,12 +150,32 @@ const checkDoubleThrees = (data) => {
     botMajor: checkLowerMajorDiagonal(data, 1),
   };
   let counter = 0;
-  for(var i in possibleThrees) {
+  for(let i in possibleThrees) {
     if(possibleThrees[i]) {
       counter++;
     }
   }
   console.log(possibleThrees)
+  if (counter >= 2) {
+    return true;
+  }
+  counter = 0;
+  data.length = 4;
+  possibleThrees = {
+    topVert: checkUpperVertical(data, 2),
+    botVer: checkLowerVertical(data, 2),
+    leftHoriz:checkLeftHorizontal(data, 2), 
+    rightHoriz: checkRightHorizontal(data, 2),
+    topMinor: checkUpperMinorDiagonal(data, 2),
+    botMinor: checkLowerMinorDiagonal(data, 2),
+    topMajor: checkUpperMajorDiagonal(data, 2),
+    botMajor: checkLowerMajorDiagonal(data, 2), 
+  }
+  for(let j in possibleThrees) {
+    if(possibleThrees[j]) {
+      counter++;
+    }
+  }
   return counter >= 2;
 };
 

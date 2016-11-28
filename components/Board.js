@@ -63,7 +63,7 @@ class Board extends React.Component {
       board: this.state.board,
       turnCount,
     };
-    checkDoubleThrees(data);
+    console.log(checkDoubleThrees(data));
     socket.emit('onMoveClick', data);
   }
   changeCoordinateState(data) {
