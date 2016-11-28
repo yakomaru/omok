@@ -66,7 +66,7 @@ body{
   margin-top: -8px;
   width: 22px;
   height: 22px;
-  background: url("./assets/Pig.png");
+  background: url("/assets/Pig.png");
 }
 
 .player-two {
@@ -74,7 +74,7 @@ body{
   margin-top: -9px;
   width: 23px;
   height: 22px;
-  background: url("./assets/Slime.png");
+  background: url("/assets/Slime.png");
 }
 
 #container {

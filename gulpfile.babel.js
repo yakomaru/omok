@@ -17,7 +17,7 @@ gulp.task('browserify', () => {
  return browserify('./src/app.js')
        .transform('babelify', {presets: ['es2015', 'react']})
        .bundle()
-       .pipe(source('app.js'))
+       .pipe(source('bundle.js'))
        .pipe(gulp.dest('./public'))
 });
 gulp.task('watch', () => {

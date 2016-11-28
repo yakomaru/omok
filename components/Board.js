@@ -1,7 +1,8 @@
 import React from 'react';
 import _ from 'lodash';
 import Grid from './Grid';
-
+import { checkDoubleThrees, checkVictoryCondition } from './RuleChecker.js';
+const socket = io();
 const BOARD_SIZE = 15;
 const buildColumn = () => _.fill(Array(BOARD_SIZE), 0);
 const buildRows = () => _.map(Array(BOARD_SIZE), buildColumn);
@@ -12,131 +13,124 @@ class Board extends React.Component {
     const BOARD = buildRows();
     this.state = {
       board: BOARD,
-      playerPiece: 1,
+      piecePlayed: 1,
       playerTurnCount: 0,
-      victoryMessage: null
+      victoryMessage: null,
+      value: '',
     };
   }
-  changeCoordinateState(newCoord, played, turnCount) {
-    const newBoard = this.state.board;
-    const newTurn = this.state.playerPiece > 1 ? 1 : 2;
-    newBoard[newCoord[0]][newCoord[1]] = played;
-    if (turnCount >= 9 && this.checkVictoryCondition(newCoord[0], newCoord[1], played)) {
+  componentDidMount() {
+    socket.on('connected', (data) => {
+      console.log(data);
+    });
+    socket.on('playerJoinedRoom', (data) => {
+      console.log(`Player has joined ${data.gameRoomId}`);
+    });
+    socket.on('changeCoordinateState', (data) => {
+      this.changeCoordinateState(data)
+    });
+    socket.on('changeBoardState', (data) => {this.changeBoardState(data)});
+  }
+
+  handleJoinRoom(e) {
+    this.setState({value: e.target.value});
+  }
+  createGameRoom(e) {
+    e.preventDefault();
+    const gameRoomId = `${Math.floor(Math.random() * 10000000)}`;
+    socket.emit('joinGameRoom', { gameRoomId, socketId: socket.id, role: 'host' });
+  }
+
+  joinGameRoom(e) {
+    e.preventDefault();
+    let gameRoomId = this.state.value;
+    socket.emit('joinGameRoom', { gameRoomId, socketId: socket.id, role: 'joinee' });
+  }
+
+  changeBoardState(data){
+    this.setState({
+      board: data.board,
+      piecePlayed: data.piecePlayed,
+      playerTurnCount: data.turnCount,
+    });
+  }
+
+  onClickHandler(newCoord, turnCount) {
+    let data = { 
+      x: newCoord[0],
+      y: newCoord[1],
+      piecePlayed: this.state.piecePlayed,
+      board: this.state.board,
+      turnCount,
+    };
+    console.log(checkDoubleThrees(data));
+    socket.emit('onMoveClick', data);
+  }
+  changeCoordinateState(data) {
+    data.length = 5;
+    data.board = this.state.board;
+    let nextPlayerPiece = this.state.piecePlayed > 1 ? 1 : 2;
+    data.board[data.x][data.y] = data.piecePlayed;
+    if (data.turnCount >= 9 && checkVictoryCondition(data)) {
       this.setState({
-        victoryMessage: 'Player ' + this.state.playerPiece + ' has won'
+        victoryMessage: `Player ${data.piecePlayed} has won`,
       });
     }
-    else {
-      this.setState({
-        board: newBoard,
-        playerPiece: newTurn,
-        playerTurnCount: turnCount,
-      });
-    }
+    this.setState({
+      board: data.board,
+      piecePlayed: nextPlayerPiece,
+      playerTurnCount: data.turnCount,
+    }, () => {
+      data.piecePlayed = this.state.piecePlayed;
+      socket.emit('onPlayerMove', data);
+    });
   }
-  checkVictoryCondition(x, y, played) {
-    return this.checkHorizontalRows(x, y, played) ||
-           this.checkVerticalRows(x, y, played) ||
-           this.checkMajorDiagonalRows(x, y, played) ||
-           this.checkMinorDiagonalRows(x, y, played);
-  }
-  checkMajorDiagonalRows(x, y, played) {
-    let inARow = 0;
-    for (let i = 0; i < 5; i += 1) {
-      if (this.state.board[x + i] && this.state.board[x + i][y + i] === played) {
-        inARow += 1;
-      } else {
-        break;
-      }
-    }
-    for (let j = 1; j < 5; j += 1) {
-      if (this.state.board[x - j] && this.state.board[x - j][y - j] === played) {
-        inARow += 1;
-      } else {
-        break;
-      }
-    }
-    return inARow >= 5;
-  }
-  checkMinorDiagonalRows(x, y, played) {
-    let inARow = 0;
-    for (let i = 0; i < 5; i += 1) {
-      if (this.state.board[x + i] && this.state.board[x + i][y - i] === played) {
-        inARow += 1;
-      } else {
-        break;
-      }
-    }
-    for (let j = 1; j < 5; j += 1) {
-      if (this.state.board[x - j] && this.state.board[x - j][y + j] === played) {
-        inARow += 1;
-      } else {
-        break;
-      }
-    }
-    return inARow >= 5;
-  }
-  checkHorizontalRows(x, y, played) {
-    const horizontal = this.state.board[x];
-    let inARow = 0;
-    for (let i = y; i < horizontal.length; i += 1) {
-      if (horizontal[i] === played) {
-        inARow += 1;
-      } else {
-        break;
-      }
-    }
-    for (let j = y - 1; j >= 0; j -= 1) {
-      if (horizontal[j] === played) {
-        inARow += 1;
-      } else {
-        break;
-      }
-    }
-    return inARow >= 5;
-  }
-  checkVerticalRows(x, y, played) {
-    let inARow = 0;
-    for (let i = x; i < this.state.board.length; i += 1) {
-      if (this.state.board[i][y] === played) {
-        inARow += 1;
-      } else {
-        break;
-      }
-    }
-    for (let j = x - 1; j >= 0; j -= 1) {
-      if (this.state.board[j][y] === played) {
-        inARow += 1;
-      } else {
-        break;
-      }
-    }
-    return inARow >= 5;
-  }
+
   render() {
     const rows = this.state.board.map((value, key) =>
       value.map((innerValue, innerKey) => {
         const coordinate = [key, innerKey];
+        let omokPiece = 'grid'
+        if (innerValue > 1) {
+          omokPiece = 'player-two';
+        }
+        else if (innerValue === 0){
+          omokPiece = 'grid';
+        }
+        else {
+          omokPiece = 'player-one';
+        }
         return (
-            <Grid
-              key={coordinate}
-              coordinate={coordinate}
-              playerPiece={this.state.playerPiece}
-              playerTurnCount={this.state.playerTurnCount}
-              changeCoordinateState={(newCoord, played, turnCount) =>
-                this.changeCoordinateState(newCoord, played, turnCount)}
-            />
+          <Grid
+            omokPiece={omokPiece}
+            coordinate={coordinate}
+            playerTurnCount={this.state.playerTurnCount}
+            onClickHandler={(newCoord, turnCount) =>
+              this.onClickHandler(newCoord, turnCount)}
+          />
         );
       })
     );
     return (
-      <div className="board-outer">
-        <div className="board-container">
-          <div className="board-inner">{rows}</div>
+      <div className="other">
+        <div className="board-outer">
+          <div className="board-container">
+            <div className="board-inner">{rows}</div>
+          </div>
+          <div className="victory-message">
+            {this.state.victoryMessage}
+          </div>
         </div>
-        <div className="victory-message">
-          {this.state.victoryMessage}
+        <div className="buttons">
+          <button id="btn-create-game" onClick={(e) => this.createGameRoom(e)}>create</button>
         </div>
+        <form onSubmit={(e) => this.joinGameRoom(e)}>
+          <label>
+            Join:
+            <input type="text" value={this.state.value} onChange={(e) => this.handleJoinRoom(e)} />
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
       </div>
     );
   }
