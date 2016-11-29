@@ -1,11 +1,18 @@
 import React from 'react';
 import _ from 'lodash';
+import io from 'socket.io-client';
 import Grid from './Grid';
-import { checkDoubleThrees, checkVictoryCondition } from './RuleChecker.js';
+import { checkDoubleThrees, checkVictoryCondition } from './RuleChecker';
+
 const socket = io();
 const BOARD_SIZE = 15;
 const buildColumn = () => _.fill(Array(BOARD_SIZE), 0);
 const buildRows = () => _.map(Array(BOARD_SIZE), buildColumn);
+const createGameRoom = (e) => {
+  e.preventDefault();
+  const gameRoomId = `${Math.floor(Math.random() * 10000000)}`;
+  socket.emit('joinGameRoom', { gameRoomId, socketId: socket.id, role: 'host' });
+};
 
 class Board extends React.Component {
   constructor() {
@@ -27,36 +34,12 @@ class Board extends React.Component {
       console.log(`Player has joined ${data.gameRoomId}`);
     });
     socket.on('changeCoordinateState', (data) => {
-      this.changeCoordinateState(data)
+      this.changeCoordinateState(data);
     });
-    socket.on('changeBoardState', (data) => {this.changeBoardState(data)});
+    socket.on('changeBoardState', (data) => { this.changeBoardState(data); });
   }
-
-  handleJoinRoom(e) {
-    this.setState({value: e.target.value});
-  }
-  createGameRoom(e) {
-    e.preventDefault();
-    const gameRoomId = `${Math.floor(Math.random() * 10000000)}`;
-    socket.emit('joinGameRoom', { gameRoomId, socketId: socket.id, role: 'host' });
-  }
-
-  joinGameRoom(e) {
-    e.preventDefault();
-    let gameRoomId = this.state.value;
-    socket.emit('joinGameRoom', { gameRoomId, socketId: socket.id, role: 'joinee' });
-  }
-
-  changeBoardState(data){
-    this.setState({
-      board: data.board,
-      piecePlayed: data.piecePlayed,
-      playerTurnCount: data.turnCount,
-    });
-  }
-
   onClickHandler(newCoord, turnCount) {
-    let data = { 
+    const data = {
       x: newCoord[0],
       y: newCoord[1],
       piecePlayed: this.state.piecePlayed,
@@ -65,6 +48,21 @@ class Board extends React.Component {
     };
     console.log(checkDoubleThrees(data));
     socket.emit('onMoveClick', data);
+  }
+  changeBoardState(data) {
+    this.setState({
+      board: data.board,
+      piecePlayed: data.piecePlayed,
+      playerTurnCount: data.turnCount,
+    });
+  }
+  joinGameRoom(e) {
+    e.preventDefault();
+    const gameRoomId = this.state.value;
+    socket.emit('joinGameRoom', { gameRoomId, socketId: socket.id, role: 'joinee' });
+  }
+  handleJoinRoom(e) {
+    this.setState({ value: e.target.value });
   }
   changeCoordinateState(data) {
     data.length = 5;
@@ -122,12 +120,12 @@ class Board extends React.Component {
           </div>
         </div>
         <div className="buttons">
-          <button id="btn-create-game" onClick={(e) => this.createGameRoom(e)}>create</button>
+          <button id="btn-create-game" onClick={e => createGameRoom(e)}>create</button>
         </div>
-        <form onSubmit={(e) => this.joinGameRoom(e)}>
+        <form onSubmit={e => this.joinGameRoom(e)}>
           <label>
             Join:
-            <input type="text" value={this.state.value} onChange={(e) => this.handleJoinRoom(e)} />
+            <input type="text" value={this.state.value} onChange={e => this.handleJoinRoom(e)} />
           </label>
           <input type="submit" value="Submit" />
         </form>
